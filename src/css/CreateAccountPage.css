@@ -1,0 +1,28 @@
+#create-account-page {
+    position: absolute;
+    margin-top: 130px;
+    padding-left: 40px;
+    font-size: large;
+}
+
+#full-name-placeholder{
+    border-radius: 35px;
+    font-size: larger;
+    text-align: center;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+#create-acc-btn{
+    margin-top: 15px;
+    padding-left: 80px;
+    padding-right: 80px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(235, 12, 168);
+    border-color: rgb(235, 12, 168);
+    color: white;
+    font-size: large;
+    font-weight: bold;
+    border-radius: 35px;
+}
