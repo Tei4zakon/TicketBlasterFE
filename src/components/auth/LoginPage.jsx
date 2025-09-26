@@ -2,7 +2,9 @@ import axios from 'axios';
 import React,{useState} from 'react';
 import { Link, useNavigate } from 'react-router';
 import { decodeToken } from "react-jwt";
-import './../css/LoginPage.css'
+
+
+import '../../css/LoginPage.css';
 //import CreateAccountPage from './CreateAccountPage';
 
 
@@ -17,11 +19,11 @@ const LoginPage = () => {
         e.preventDefault();
         try {
             const res = await axios.post(
-                "http://localhost:2741/api/v1/login",
+                "http://localhost:2741/login",
                 { email, password },
         { headers: { "Content-Type": "application/json" } }
       );
-      // { success: true, token: "nasiot token" }
+
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
@@ -29,7 +31,7 @@ const LoginPage = () => {
         if (decoded.role === "admin") {
           navigate("/");
         } else {
-          navigate("/create-account");
+          navigate("/ticket-history");
         }
       } else {
         setError(res.data.error || "Login error!");
@@ -45,21 +47,22 @@ const LoginPage = () => {
     
            <div id='login-page'> 
            <h1>Log In</h1>
-           <form className='form-container' onSubmit={handleSubmit}>
-            <p>Email</p>
+           <form onSubmit={handleSubmit}>
+            <label id='email'>Email</label>
                 <input id='email-placeholder'
                 type='text'
                 placeholder=''
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required></input>
-            <p>Password</p>
+            <label id='password'>Password</label>
                 <input id='password-placeholder'
                 type='password'
                 placeholder=''
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required></input>
+                {error && <div style={{ color: "red", marginBottom: 8 }}>{error}</div>}
             <p id='forgot-password'>
                 <Link to='/login/forgot-password'>
                     <u>Forgot password?</u></Link>
