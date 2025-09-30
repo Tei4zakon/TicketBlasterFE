@@ -1,26 +1,28 @@
 import axios from 'axios';
 import React from 'react';
-import { Link } from 'react-router';
+import { useState } from 'react'
+import { Link } from 'react-router-dom';
 import './../css/CreateAccountPage.css';
+import {useSelector, useDispatch} from 'react-redux';
 
 
 
 const CreateAccountPage = () => {
     const dispatch = useDispatch();
-    const isLoading = useSelector(state => state.user.loading);
+    // const isLoading = useSelector(state => state.user.loading);
    
     const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
-    password2: ''
+    retypePassword: ''
   });
 
 
 
     const handleCreateAccount = async (e) => {
     e.preventDefault();
-    if (password !== password2){
+    if (password !== retypePassword){
         console.log("Passwords don't match!")
         setError("Passwords don't match!")
     } else {
@@ -29,8 +31,8 @@ const CreateAccountPage = () => {
     }
     try {
         const res = await axios.post(
-            "http://localhost:2741/api/v1/create-account",
-            {firstName, lastName, email, password, retypePassword},
+            "http://localhost:2741/create-account",
+            {fullName, email, password, retypePassword},
             { headers: { "Content-Type": "application/json" } },
       );
       const token = await dispatch(registerUser(newUser)).unwrap();
@@ -50,13 +52,13 @@ const CreateAccountPage = () => {
             <input id='full-name-placeholder' 
             type='text' 
             placeholder=''
-            value={fullName}
+            value={""}
             onChange={(e) => setFullName(e.target.value)}></input>
         <p>Email</p>
             <input id='email-placeholder'
                 type='text'
                 placeholder=''
-                value={email}
+                value={""}
                 onChange={(e) => setEmail(e.target.value)}></input>
         <p>Password</p>
             <input id='password-placeholder'

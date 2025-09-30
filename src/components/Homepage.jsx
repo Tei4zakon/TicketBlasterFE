@@ -1,25 +1,38 @@
 import React,{useEffect, useState} from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 import EventCard from './EventCard';
+import { Events } from './events';
 
 const Homepage = () => {
     
     const [event, setEvent] = useState([]);
     useEffect(() => {
-        fetch("http://localhost:2741/")
-        .then((res) => res.json())
-        .then((data) => setEvent(data));
-    }, []);
+        axios
+      .get("http://localhost:2741/") 
+      .then((res) => {
+        setEvent(res.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching events:", err);
+      });
+  }, []);
 
     const concerts = event.filter((e) => e.eventType === "musical concerts");
     const comedy = event.filter((e) => e.eventType === "stand-up comedy");
 
     return(
         <div className='homepage-container'>
+            <div id='front-event'>
+                {concerts.slice(0, 1).map((event) => (
+                <EventCard key={event._id} {...event} />
+            ))}
+            </div>
+            <div>
             <h2>Musical Concerts</h2>
             <div className='musical-concerts-grid'>
-                {concerts.slice(0,5).map((event) => (
+                {concerts.slice(1,6).map((event) => (
                     <EventCard key={event._id}
                     {...event} />
                 ))}
@@ -46,6 +59,7 @@ const Homepage = () => {
                     </Link>
                     </div>
             )}
+            </div>
                 
         </div>
     )
