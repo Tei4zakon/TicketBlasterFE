@@ -52,3 +52,15 @@
     text-decoration: none;
 }
 
+#email {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+#password {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
