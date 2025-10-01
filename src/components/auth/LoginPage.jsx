@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React,{useState} from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import { decodeToken } from "react-jwt";
 
 
@@ -37,8 +37,8 @@ const LoginPage = () => {
         setError(res.data.error || "Login error!");
       }
     } catch (err) {
-      console.log(err);
-      setError("Server erorr!");
+      console.error("Login error:", err.response ? err.response.data : err.message);
+  setError(err.response?.data?.error || "Login failed, please try again");
     }
   };
 
