@@ -1,48 +1,48 @@
 import axios from 'axios';
 import React from 'react';
 import { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 import './../css/CreateAccountPage.css';
-import {useSelector, useDispatch} from 'react-redux';
 
 
 
 const CreateAccountPage = () => {
-    const dispatch = useDispatch();
-    // const isLoading = useSelector(state => state.user.loading);
    
     const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
-    retypePassword: ''
+    confirmPassword: ''
   });
-
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
 
     const handleCreateAccount = async (e) => {
     e.preventDefault();
-    if (password !== retypePassword){
+
+    const {fullName, email, password, confirmPassword} = formData;
+
+    if (password !== confirmPassword){
         console.log("Passwords don't match!")
-        setError("Passwords don't match!")
-    } else {
-        const { fullName, email, password} = formData;
-        const newUser = {fullName, email, password};
+        setError("Passwords don't match!");
+        return;
     }
     try {
-        const res = await axios.post(
+        await axios.post(
             "http://localhost:2741/create-account",
-            {fullName, email, password, retypePassword},
+            {fullName, email, password, confirmPassword},
             { headers: { "Content-Type": "application/json" } },
       );
-      const token = await dispatch(registerUser(newUser)).unwrap();
-        await dispatch(verifyToken(token));
+
+      navigate("/login");
+
     } catch (err) {
       console.log(err);
       setError("Server erorr!");
     };
-}
-
+};
 
     return(
         <div id='create-account-page'>
@@ -52,22 +52,28 @@ const CreateAccountPage = () => {
             <input id='full-name-placeholder' 
             type='text' 
             placeholder=''
-            value={""}
-            onChange={(e) => setFullName(e.target.value)}></input>
+            value={formData.fullName}
+            onChange={(e) => setFormData({...formData, fullName: e.target.value})}></input>
         <p>Email</p>
             <input id='email-placeholder'
                 type='text'
                 placeholder=''
-                value={""}
-                onChange={(e) => setEmail(e.target.value)}></input>
+                value={formData.email}
+                onChange={(e) => setFormData({...formData, email: e.target.value})}></input>
         <p>Password</p>
             <input id='password-placeholder'
                 type='password'
-                placeholder=''></input>
+                placeholder=''
+                value={formData.password}
+                onChange={(e) => setFormData({...formData, password: e.target.value})}>
+            </input>
         <p>Re-type Password</p>
             <input id='password-placeholder'
                 type='password'
-                placeholder=''></input>
+                placeholder=''
+                value={formData.confirmPassword}
+                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}>
+            </input>
         <p><button id='create-acc-btn'>Create Account</button></p>
         <br/>
         <br/>
