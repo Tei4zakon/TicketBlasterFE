@@ -1,6 +1,7 @@
-import axios from 'axios';
 import React,{useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from "react-redux";
+import {logIntoApp} from './duck/operations';
 import { decodeToken } from "react-jwt";
 
 
@@ -13,16 +14,14 @@ const LoginPage = () => {
     const [error, setError] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(
-                "http://localhost:2741/login",
-                { email, password },
-        { headers: { "Content-Type": "application/json" } }
-      );
+            await dispatch(logIntoApp({ email, password }));
 
 
       if (res.data.token) {
