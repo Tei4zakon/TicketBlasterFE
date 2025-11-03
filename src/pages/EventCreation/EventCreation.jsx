@@ -34,8 +34,6 @@ const EventCreation = () => {
           `/api/events/type?type=${category}`
         );
         setRelatedEventsOptions(response.data);
-        const initialEvents = response.data.slice(0, 2).filter(Boolean);
-        setRelatedEvents(initialEvents);
         if (response.data[0]) {
           setSelectedRelatedEventId(response.data[0]._id);
         }

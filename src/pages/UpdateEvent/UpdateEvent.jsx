@@ -82,13 +82,16 @@ const UpdateEvent = () => {
           `/api/events/type?type=${category}`
         );
         setRelatedEventsOptions(response.data);
-        setSelectedRelatedEventId(response.data[0]._id);
+        const firstValidOption = response.data.find(e => e._id !== event._id);
+        if (firstValidOption) {
+          setSelectedRelatedEventId(firstValidOption._id);
+        }
       } catch (error) {
         console.error(error);
       }
     };
     fetchRelatedEvents();
-  }, [category]);
+  }, [category, event._id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
