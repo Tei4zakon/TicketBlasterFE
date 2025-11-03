@@ -1,0 +1,30 @@
+.btn-container {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  font: inherit;
+  width: 230px;
+  font-size: 16px;
+  padding: 9px 28px;
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-pink {
+  background-color: #ff48ab;
+}
+
+.no-items-found {
+  color: #969696;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.disabledBtn {
+  opacity: 0.4;
+  pointer-events: none;
+}

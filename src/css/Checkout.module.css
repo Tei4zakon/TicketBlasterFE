@@ -1,0 +1,54 @@
+.flex {
+  display: flex;
+  width: 100%;
+  gap: 130px;
+}
+/* 
+.left {
+  width: 530px;
+} */
+
+input {
+  width: 357px;
+}
+
+.inputs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 35px;
+}
+
+.inputs-container label {
+  color: #393939;
+  font-size: 18px;
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-price h2 {
+  font-weight: 800;
+}
+
+.btn-container {
+  margin-top: 50px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  font: inherit;
+  width: 230px;
+  font-size: 16px;
+  padding: 9px 28px;
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-pink {
+  background-color: #ff48ab;
+}
