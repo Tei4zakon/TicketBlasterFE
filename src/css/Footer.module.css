@@ -1,0 +1,22 @@
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.styles {
+  background-color: #fffefe;
+  padding: 10px 0px;
+  color: #d2d2d3;
+  position: absolute;
+  bottom: 0;
+}
+
+.layout {
+  display: flex;
+  justify-content: space-between;
+}
+
+.span {
+  font-size: 14px;
+}

@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  position: relative;
+}
+
+.select {
+  border: 1px solid #000;
+  font: inherit;
+  width: 357px;
+  height: 42px;
+  border-radius: 21px;
+  padding: 9px 15px;
+  color: #000000;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: url("../../../assets/arrow-down.png") no-repeat
+    calc(100% - 15px) center;
+}
+
+.select:focus {
+  outline: none;
+}

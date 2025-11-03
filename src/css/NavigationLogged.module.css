@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-nav {
+  display: flex;
+  gap: 23px;
+  color: #393939;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.button {
+  margin-top: 20px;
+  background-color: #ff48ab;
+  font: inherit;
+  border: none;
+  color: #ffffff;
+  padding: 12px 26px;
+}
+
+.active {
+  color: #ff48ab;
+}
+
+.btn {
+  border: none;
+  background-color: #ffffff;
+  color: inherit;
+  cursor: pointer;
+}
