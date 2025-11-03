@@ -1,0 +1,16 @@
+.spacing {
+  display: flex;
+  flex-direction: column;
+  gap: -10px;
+}
+
+.spacing button {
+  margin-top: 32px;
+}
+
+.error {
+  color: red;
+  font-size: 18px;
+  position: absolute;
+  top: 185px;
+}

@@ -1,0 +1,19 @@
+.spacing {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+.error {
+  color: red;
+  font-size: 18px;
+  position: absolute;
+  top: 185px;
+}
+
+.msg {
+  color: #ff48ab;
+  font-size: 21px;
+  position: absolute;
+  top: 185px;
+}

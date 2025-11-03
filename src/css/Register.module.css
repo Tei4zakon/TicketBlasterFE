@@ -1,0 +1,14 @@
+.btn {
+  margin: 8px 0px 25px 0px;
+}
+
+.btn button {
+  width: 100%;
+}
+
+.error {
+  color: red;
+  font-size: 18px;
+  position: absolute;
+  top: 185px;
+}
