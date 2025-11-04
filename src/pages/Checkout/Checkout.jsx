@@ -12,6 +12,7 @@ import axios from "../../api/axios.js";
 import { decodeJwt } from "../../helpers/jwt.jsx";
 import { formatTime } from "../../helpers/formatTime.jsx";
 import Loading from "../../components/Loading/Loading.jsx";
+import { eventsService } from "../../services/index.js";
 
 const Checkout = () => {
   const isLoading = useSelector((state) => state.loading.isLoading);
@@ -24,21 +25,30 @@ const Checkout = () => {
   const userId = decodeJwt();
 
   useEffect(() => {
-    const getCartItems = async () => {
+    const loadCartItems = async () => {
       dispatch(setIsLoading(true));
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/tickets/${userId}/${false}`, {
-          headers: { "auth-token": token }
-        });
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        if (cart.length === 0) {
+          setCartItems([]);
+          setTotalPrice(0);
+          return;
+        }
 
-        setTotalPrice(
-          response.data
-            .map((x) => x.quantity * x.event.price)
-            .reduce((x, y) => (x = x + y))
+        const items = await Promise.all(
+          cart.map(async (item) => {
+            try {
+              const response = await eventsService.fetchEventById(item.event);
+              return { _id: item.event, event: response.data, quantity: item.quantity };
+            } catch {
+              return null;
+            }
+          })
         );
 
-        setCartItems(response.data);
+        const validItems = items.filter(item => item !== null);
+        setCartItems(validItems);
+        setTotalPrice(validItems.reduce((sum, item) => sum + item.quantity * item.event.price, 0));
       } catch (err) {
         console.error(err);
       } finally {
@@ -46,20 +56,24 @@ const Checkout = () => {
       }
     };
 
-    getCartItems();
-  }, [userId, dispatch]);
+    loadCartItems();
+  }, [dispatch]);
 
   const pay = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        `/api/tickets/purchase-ticket/${userId}`,
-        {},
-        {
-          headers: { "auth-token": token }
-        }
-      );
+      const tickets = cartItems.map(item => ({
+        event: item._id,
+        user: userId,
+        quantity: item.quantity,
+        isPurchased: true
+      }));
 
+      await axios.post(`/api/tickets/purchase-ticket/${userId}`, { tickets }, {
+        headers: { "auth-token": token }
+      });
+
+      localStorage.removeItem("cart");
       navigate("/successful-payment", { state: { cartItems } });
     } catch (err) {
       console.error(err);

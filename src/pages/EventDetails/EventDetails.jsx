@@ -5,9 +5,8 @@ import EventElement from "../../components/EventElement.jsx";
 import Button from "../../components/Button/Button.jsx";
 import { formatTime } from "../../helpers/formatTime.jsx";
 import Title from "../../components/Title/Title.jsx";
-import { decodeJwt } from "../../helpers/jwt.jsx";
 import { useSelector } from "react-redux";
-import { eventsService, ticketsService } from "../../services/index.js";
+import { eventsService } from "../../services/index.js";
 import { getImageUrl } from "../../utils/imageUrl.js";
 
 const EventDetails = () => {
@@ -33,34 +32,25 @@ const EventDetails = () => {
     loadEventDetails();
   }, [eventId]);
 
-  const userId = decodeJwt();
-
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!user) {
-      localStorage.setItem(
-        "redirectedFromItem",
-        JSON.stringify({ event: event._id, quantity })
-      );
+      localStorage.setItem("redirectedFromItem", JSON.stringify({ event: event._id, quantity }));
       navigate("/login");
       return;
     }
-    try {
-      const quantityNumber = parseFloat(quantity);
-      console.log(`[EVENT_DETAILS] Adding ${quantityNumber} tickets to cart for event: ${event.eventName}`);
-
-      await ticketsService.addTicketToCart({
-        event: event._id,
-        user: userId,
-        quantity: quantityNumber,
-        isPurchased: false,
-      });
-
-      console.log(`[EVENT_DETAILS] Successfully added tickets to cart, navigating to cart`);
-      localStorage.removeItem("redirectedFromItem");
-      navigate("/cart");
-    } catch (err) {
-      console.error(`[EVENT_DETAILS] Failed to add tickets to cart for event: ${event._id}`, err);
+    
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingItemIndex = cart.findIndex(item => item.event === event._id);
+    
+    if (existingItemIndex !== -1) {
+      cart[existingItemIndex].quantity += parseFloat(quantity);
+    } else {
+      cart.push({ event: event._id, quantity: parseFloat(quantity) });
     }
+    
+    localStorage.setItem("cart", JSON.stringify(cart));
+    localStorage.removeItem("redirectedFromItem");
+    navigate("/cart");
   };
 
   return (

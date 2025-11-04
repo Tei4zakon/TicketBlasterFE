@@ -6,10 +6,9 @@ import Button from "../../components/Button/Button.jsx";
 import Title from "../../components/Title/Title.jsx";
 import classes from "../../css/Cart.module.css";
 import CartElement from "../../components/CartElement.jsx";
-import { decodeJwt } from "../../helpers/jwt.jsx";
 import { formatTime } from "../../helpers/formatTime.jsx";
 import Loading from "../../components/Loading/Loading.jsx";
-import { ticketsService } from "../../services/index.js";
+import { eventsService } from "../../services/index.js";
 
 const Cart = () => {
   const isLoading = useSelector((state) => state.loading.isLoading);
@@ -18,37 +17,43 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
 
-  const handleRemove = async (id) => {
-    try {
-      console.log(`[CART] Removing item from cart: ${id}`);
-      await ticketsService.removeCartItem(id);
-      setCartItems(cartItems.filter((item) => item._id !== id));
-      console.log(`[CART] Successfully removed item from cart`);
-    } catch (err) {
-      console.error(`[CART] Failed to remove item from cart: ${id}`, err);
-    }
+  const handleRemove = (eventId) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    localStorage.setItem("cart", JSON.stringify(cart.filter(item => item.event !== eventId)));
+    setCartItems(cartItems.filter(item => item._id !== eventId));
   };
 
-  const userId = decodeJwt();
-
   useEffect(() => {
-    dispatch(setIsLoading(true));
     const loadCartItems = async () => {
+      dispatch(setIsLoading(true));
       try {
-        console.log(`[CART] Loading cart items for user: ${userId}`);
-        const response = await ticketsService.fetchUserTickets(userId, false);
-        const validCartItems = response.data.filter((x) => x.event);
-        setCartItems(validCartItems);
-        console.log(`[CART] Loaded ${validCartItems.length} cart items`);
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        if (cart.length === 0) {
+          setCartItems([]);
+          return;
+        }
+
+        const items = await Promise.all(
+          cart.map(async (item) => {
+            try {
+              const response = await eventsService.fetchEventById(item.event);
+              return { _id: item.event, event: response.data, quantity: item.quantity };
+            } catch {
+              return null;
+            }
+          })
+        );
+
+        setCartItems(items.filter(item => item !== null));
       } catch (err) {
-        console.error(`[CART] Failed to load cart items`, err);
+        console.error(err);
       } finally {
         dispatch(setIsLoading(false));
       }
     };
 
     loadCartItems();
-  }, [userId, dispatch]);
+  }, [dispatch]);
 
   const goBack = () => {
     navigate(-1);
