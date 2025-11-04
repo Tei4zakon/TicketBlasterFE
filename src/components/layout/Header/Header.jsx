@@ -15,7 +15,14 @@ const Header = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setSearchValue(e.target.value);
+    const value = e.target.value;
+    setSearchValue(value);
+    
+    if (value.trim() !== "") {
+      navigate(`/search-results?search=${value}`);
+    } else {
+      navigate("/");
+    }
   };
 
   const handleSearch = (event) => {
@@ -24,7 +31,6 @@ const Header = () => {
         return;
       }
       navigate(`/search-results?search=${searchValue}`);
-      setSearchValue("");
     }
   };
 
