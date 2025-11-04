@@ -7,7 +7,7 @@ import { formatTime } from "../../helpers/formatTime.jsx";
 import PrintModal from "../../components/PopUp/PrintModal.jsx";
 import NavigationLogged from "../../components/NavigationLogged.jsx";
 import { decodeJwt } from "../../helpers/jwt.jsx";
-import axios from "../../api/axios.js";
+import { ticketsService } from "../../services/index.js";
 import Loading from "../../components/Loading/Loading.jsx";
 
 function TicketsHistory() {
@@ -15,7 +15,8 @@ function TicketsHistory() {
   const dispatch = useDispatch();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showPrint, setShowPrint] = useState(false);
-  const [ticketsHistory, setTicketsHistory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredTickets, setFilteredTickets] = useState(null);
 
   const handlePrint = (event) => {
     setSelectedEvent(event);
@@ -24,13 +25,10 @@ function TicketsHistory() {
   const userId = decodeJwt();
 
   useEffect(() => {
-    dispatch(setIsLoading(true));
-    const getTicketsHistory = async () => {
+    const timeoutId = setTimeout(async () => {
+      dispatch(setIsLoading(true));
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`/api/tickets/${userId}/${true}`, {
-          headers: { "auth-token": token }
-        });
+        const response = await ticketsService.fetchTicketHistory(userId, searchQuery);
 
         const sortedTickets = response.data
           .filter((x) => x.event)
@@ -38,15 +36,20 @@ function TicketsHistory() {
             return new Date(b.event.date) - new Date(a.event.date);
           });
 
-        setTicketsHistory(sortedTickets);
+        setFilteredTickets(sortedTickets);
       } catch (err) {
-        console
+        console.error("Error fetching ticket history:", err);
       } finally {
         dispatch(setIsLoading(false));
       }
-    };
-    getTicketsHistory();
-  }, [userId, dispatch]);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [userId, searchQuery, dispatch]);
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+  };
 
   return (
     <>
@@ -58,32 +61,43 @@ function TicketsHistory() {
           print={true}
         />
       )}
+      <div className={classes.searchContainer}>
+        <input
+          type="text"
+          placeholder="Search by event name, city, country, or description..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className={classes.searchInput}
+        />
+      </div>
       <div className={classes.grid}>
-        {isLoading || ticketsHistory === null ? (
+        {isLoading || filteredTickets === null ? (
           <Loading />
-        ) : ticketsHistory.length === 0 ? (
-          <span className={classes["no-items-found"]}>No tickets found</span>
+        ) : filteredTickets.length === 0 ? (
+          <span className={classes["no-items-found"]}>
+            {searchQuery ? "No tickets match your search" : "No tickets found"}
+          </span>
         ) : (
-          ticketsHistory.map((event) => {
+          filteredTickets.map((ticket) => {
             return (
               <EventElement
                 className={
-                  new Date() > new Date(event.event.date)
+                  new Date() > new Date(ticket.event.date)
                     ? classes.disabled
                     : ""
                 }
-                key={event.event._id}
-                id={event.event._id}
-                eventName={event.event.eventName}
-                date={formatTime(event.event.date)}
-                country={event.event.country}
-                city={event.event.city}
-                description={event.event.description}
-                img={event.event.img}
+                key={ticket._id}
+                id={ticket.event._id}
+                eventName={ticket.event.eventName}
+                date={formatTime(ticket.event.date)}
+                country={ticket.event.country}
+                city={ticket.event.city}
+                description={ticket.event.description}
+                img={ticket.event.img}
                 text="Print"
-                qrcode={event.qrCode}
+                qrcode={ticket.qrCode}
                 openModal={() => setShowPrint(true)}
-                onPrint={() => handlePrint(event.event)}
+                onPrint={() => handlePrint(ticket.event)}
               />
             );
           })

@@ -51,5 +51,19 @@ export const ticketsService = {
       console.error(`[TICKETS_SERVICE] Failed to remove cart item ID: ${ticketId}`, error);
       throw error;
     }
+  },
+
+  async fetchTicketHistory(userId, searchQuery = "") {
+    try {
+      const token = localStorage.getItem("token");
+      const searchParam = searchQuery.trim() ? `?search=${encodeURIComponent(searchQuery)}` : '';
+      const response = await axios.get(`/api/tickets/history/${userId}${searchParam}`, {
+        headers: { "auth-token": token }
+      });
+      return response;
+    } catch (error) {
+      console.error(`[TICKETS_SERVICE] Failed to fetch ticket history for user: ${userId}`, error);
+      throw error;
+    }
   }
 };
